@@ -1,0 +1,6 @@
+{
+  "name": "Teamy — Giày Thể Thao Cao Cấp",
+  "description": "Thương hiệu giày thể thao chuyên nghiệp Teamy: Giày cầu lông, giày tennis và giày chạy bộ. Chạm nhịp chuyển động.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
