@@ -13,9 +13,30 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23151515'/%3E%3Cpath d='M7 9h18l-4 4h-5v10h-4V13H7L7 9z' fill='%23C7F464'/%3E%3Ccircle cx='23' cy='21' r='2.5' fill='%23C7F464'/%3E%3C/svg%3E" />
+    <!-- Pre-load pre-built stylesheet for static servers (e.g. GitHub Pages) -->
+    <link rel="stylesheet" href="./assets/index.css" onerror="this.remove()">
   </head>
   <body class="bg-[#F7F7F2] text-[#151515] font-['Be_Vietnam_Pro',sans-serif] antialiased selection:bg-[#C7F464] selection:text-[#151515]">
     <div id="root"></div>
+
+    <!-- Development Vite module entry point -->
     <script type="module" src="/src/main.tsx"></script>
+
+    <!-- Production Fail-safe Fallback for Static Hosting (e.g. teamyshop.github.io root) -->
+    <script type="module">
+      // Detect if running on static hosting without Vite server
+      const isGitHubPages = window.location.hostname.endsWith('github.io');
+      if (isGitHubPages) {
+        import('./assets/index.js');
+      } else {
+        // Fallback watchdog for any other static environment where /src/main.tsx fails
+        setTimeout(() => {
+          const rootEl = document.getElementById('root');
+          if (rootEl && rootEl.children.length === 0) {
+            import('./assets/index.js');
+          }
+        }, 300);
+      }
+    </script>
   </body>
 </html>
