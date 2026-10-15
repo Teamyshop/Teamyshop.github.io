@@ -13,7 +13,7 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({
   onClose,
   onOpenSheetsConfig
 }) => {
-  const [activeTab, setActiveTab] = useState<'flowchart' | 'mapping' | 'sheets-guide' | 'presentation' | 'testing'>('flowchart');
+  const [activeTab, setActiveTab] = useState<'flowchart' | 'mapping' | 'sheets-guide' | 'presentation' | 'testing' | 'hosting'>('hosting');
   const [copiedCode, setCopiedCode] = useState(false);
 
   if (!isOpen) return null;
@@ -117,6 +117,18 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({
           >
             <HelpCircle className="w-4 h-4" />
             <span>5. Checklist Kiểm Thử</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('hosting')}
+            className={`px-3.5 py-2 text-xs font-bold rounded-xl whitespace-nowrap transition-colors cursor-pointer flex items-center gap-1.5 ${
+              activeTab === 'hosting'
+                ? 'bg-red-600 text-white'
+                : 'text-red-700 bg-red-50 hover:bg-red-100'
+            }`}
+          >
+            <ShieldCheck className="w-4 h-4" />
+            <span>6. Sửa Lỗi Trắng Trang GitHub Pages</span>
           </button>
         </div>
 
@@ -471,6 +483,89 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({
                     <li>• Bàn phím số tự động hiển thị khi nhập trường Số điện thoại.</li>
                     <li>• Form checkout hiển thị dạng xếp chồng 1 cột rõ ràng, nút bấm lớn hơn 44px.</li>
                     <li>• Tôn trọng chế độ giảm chuyển động (prefers-reduced-motion) nếu người dùng bật trên thiết bị.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 6: FIX BLANK SCREEN ON GITHUB PAGES */}
+          {activeTab === 'hosting' && (
+            <div className="space-y-5 animate-in fade-in">
+              <div className="bg-red-50 border border-red-200 p-5 rounded-2xl text-red-900">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping" />
+                  <h3 className="font-display text-base font-bold text-red-950">
+                    Nguyên Nhân Trang Web Bị Trắng Xóa Khi Truy Cập `teamyshop.github.io`
+                  </h3>
+                </div>
+                <p className="text-xs text-red-800 leading-relaxed">
+                  Trang web bị màn hình trắng là lỗi kinh điển khi đưa dự án React + Vite lên GitHub Pages. Có 2 nguyên nhân cốt lõi:
+                </p>
+                <div className="mt-3 space-y-2 text-xs">
+                  <div className="p-3 bg-white/80 rounded-xl border border-red-200">
+                    <strong className="text-red-900">1. GitHub Pages đang phục vụ file mã nguồn gốc (chưa build):</strong>
+                    <p className="text-[#666660] mt-0.5">
+                      File <code>index.html</code> gốc gọi tới <code>/src/main.tsx</code>. Trình duyệt Chrome không thể tự biên dịch TypeScript/JSX nếu không có Node.js. Khi gặp file <code>.tsx</code>, trình duyệt dừng chạy và màn hình trắng tinh.
+                    </p>
+                  </div>
+                  <div className="p-3 bg-white/80 rounded-xl border border-red-200">
+                    <strong className="text-red-900">2. Đường dẫn tài nguyên tuyệt đối (Missing <code>base: &apos;./&apos;</code>):</strong>
+                    <p className="text-[#666660] mt-0.5">
+                      Trước đó đường dẫn file script là <code>/assets/...</code> thay vì <code>./assets/...</code>, làm trình duyệt báo lỗi 404 Not Found khi tải file bundle giao diện.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Solutions */}
+              <div className="space-y-4">
+                <h4 className="font-display text-sm font-extrabold text-[#151515] uppercase tracking-wider">
+                  2 Cách Khắc Phục Đơn Giản & Hiệu Quả Nhất
+                </h4>
+
+                {/* Option A: GitHub Actions (Recommended) */}
+                <div className="p-5 bg-white border-2 border-emerald-500 rounded-2xl relative shadow-xs">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="px-2.5 py-0.5 bg-emerald-100 text-emerald-800 font-bold text-[11px] rounded-md">
+                      CÁCH 1: KHUYÊN DÙNG (TỰ ĐỘNG 100%)
+                    </span>
+                    <span className="text-xs font-semibold text-emerald-700">Thời gian: 1 phút</span>
+                  </div>
+                  <h5 className="font-bold text-sm text-[#151515]">
+                    Kích hoạt GitHub Actions tự động build (Đã tạo sẵn file cấu hình)
+                  </h5>
+                  <p className="text-xs text-[#666660] mt-1 leading-relaxed">
+                    Dự án đã được tích hợp sẵn tệp <code>.github/workflows/deploy.yml</code>. Bạn chỉ cần:
+                  </p>
+                  <ol className="list-decimal list-inside mt-2.5 text-xs text-[#151515] space-y-1.5 font-medium">
+                    <li>Vào repository <strong>teamyshop</strong> trên GitHub của bạn.</li>
+                    <li>Bấm vào tab <strong>Settings</strong> (Cài đặt) trên thanh ngang của repo.</li>
+                    <li>Ở thanh menu bên trái, chọn mục <strong>Pages</strong>.</li>
+                    <li>Tại mục <strong>Build and deployment &rarr; Source</strong>: Đổi từ <em>Deploy from a branch</em> sang <strong>GitHub Actions</strong>.</li>
+                    <li>Đẩy code (git push) hoặc vào tab <strong>Actions</strong> bấm <strong>Run workflow</strong>.</li>
+                  </ol>
+                  <div className="mt-3 p-2.5 bg-emerald-50 text-emerald-900 text-xs rounded-xl font-semibold">
+                    👉 Sau khi xong, truy cập lại <code>https://teamyshop.github.io</code> trang web sẽ lập tức hiển thị đầy đủ giao diện, không còn màn hình trắng!
+                  </div>
+                </div>
+
+                {/* Option B: Deploy dist directly */}
+                <div className="p-5 bg-white border border-[#151515]/15 rounded-2xl shadow-xs">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="px-2.5 py-0.5 bg-gray-100 text-[#151515] font-bold text-[11px] rounded-md">
+                      CÁCH 2: NẾU DEPLOY THỦ CÔNG QUA NHÁNH GH-PAGES HOẶC NETLIFY
+                    </span>
+                  </div>
+                  <h5 className="font-bold text-sm text-[#151515]">
+                    Chỉ đưa các tệp BÊN TRONG thư mục <code>dist/</code> lên hosting
+                  </h5>
+                  <p className="text-xs text-[#666660] mt-1 leading-relaxed">
+                    Hệ thống đã chạy lệnh <code>npm run build</code> và xuất toàn bộ mã HTML, CSS, JS đã biên dịch vào thư mục <code>dist/</code>:
+                  </p>
+                  <ul className="list-disc list-inside mt-2 text-xs text-[#151515] space-y-1">
+                    <li>Nếu dùng GitHub Pages qua branch: Đưa nội dung của thư mục <code>dist</code> vào nhánh <code>gh-pages</code> (hoặc root của repo <code>teamyshop.github.io</code>).</li>
+                    <li>Nếu cần link nộp bài môn học chạy ngay trong 10 giây: Bạn có thể kéo thả cả thư mục <code>dist</code> vào trang <a href="https://app.netlify.com/drop" target="_blank" rel="noreferrer" className="text-blue-600 underline font-bold">Netlify Drop</a> hoặc Vercel, website sẽ hoạt động 100% tức thì!</li>
                   </ul>
                 </div>
               </div>
